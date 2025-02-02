@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wordle Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #FF7E79, #8EC5FC);
+      margin: 0;
+      padding: 0;
+     height:100vh;
+     width:100%;
+    }
+
+    #wordle-page {
+    background: linear-gradient(135deg, #FF7E79, #8EC5FC);
+   
+    }
+
+    h1 {
+      color: #333;
+      font-size: 3rem;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      background: linear-gradient(135deg, #FF7E79, #FFBBEC);
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    #about-btn {
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+    }
+
+    #about-btn:hover {
+      background: linear-gradient(135deg, #2575fc, #6a11cb);
+    }
+
+    #grid-container {
+      display: grid;
+      grid-template-columns: repeat(5, 55px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin: 20px auto;
+      padding:0;
+      width:max-content;
+    }
+
+    .cell {
+      width: 55px;
+      height:55px;
+      border: 2px solid;
+      text-align: center;
+      line-height: 55px;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.7);
+    }
+
+    .correct {
+      background-color: green;
+      color: white;
+    }
+
+    .present {
+      background-color: yellow;
+      color: black;
+    }
+
+    .absent {
+      background-color: grey;
+      color: white;
+    }
+
+    #keyboard-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+      grid-gap: 8px;
+      justify-content: center;
+      margin: 20px auto 0;
+      padding: 10px;
+      max-width: 600px;
+
+    }
+
+    
+.key {
+  background-color:#000; /* Black background #8E95E3 #515DE0*/
+  color: #fff; 
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 18px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); 
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+  font-weight: bold;
+  text-align:center;
+}
+
+
+.key:active {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); 
+  transform: translatey(-20px);
+}
+.key:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+}
+    .key.large {
+      grid-column: span 2;
+    }
+
+    .key.correct {
+      background-color: green;
+      color: white;
+    }
+
+    .key.present {
+      background-color: yellow;
+      color: black;
+    }
+
+    .key.absent {
+      background-color: grey;
+      color: white;
+    }
+
+    .key.large {
+      grid-column: span 2;
+    }
+
+    @media(max-width : 768px) {
+      .key {
+        font-size: 12px;
+        padding: 8px;
+      }
+    }
+
+    #about-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ff7e5f, #feb47b);
+    }
+
+    .modal-content {
+      color: black;
+      background: linear-gradient(135deg, #FF7E79, #8EC5FC);
+      padding: 20px;
+      border-radius: 5px;
+      text-align: left;
+      width: 80%;
+      max-width: 600px;
+      max-height: 80%;
+      overflow-y: auto;
+    }
+
+    .modal-text {
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      border: 2px solid #ffffff;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.8);
+      margin-bottom: 10px;
+      width: 80%;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #2575fc;
+    }
+
+    .box {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      display: inline-block;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      width: 300px;
+    }
+    
+    li {
+      font-size:17px;
+    }
+    
+    #back-btn {
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  padding: 4px 10px;
+  font-size: 16px;
+  background: #ff4b4b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: background 0.2s, transform 0.2s;
+}
+
+#back-btn:hover {
+  background: #d63030;
+  transform: scale(1.05);
+}
+  </style>
+</head>
+
+<body>
+  <!-- Welcome Page -->
+  <div id="welcome-page">
+ 
+    <h1>Welcome  To Wordle</h1>
+    <div class="box">
+      <p style="font-size: 1.2rem;">What's your Good Name?</p>
+      <input type="text" id="user-name" placeholder="Your Name">
+      <button id="submit-btn">Submit</button>
+      <button id="about-btn">About Me</button>
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div id="about-modal" style="display: none;">
+    <div class="modal-content">
+      <h2>About</h2>
+      <div class="modal-text">
+
+        <h3>1. Personal Details</h3>
+        <ul>
+          <li><b>Name :</b> Akshay Kumar</li>
+          <li><b>Education :</b><br> 11th Grade , S.D. Inter College (City: Muzaffarnagar)</li>
+          <li><b>Family Information</b></li>
+          <ul>
+            <li><b>Mother's Name :</b><br> Mrs. Sushma</li>
+            <li><b>Father's Name :</b> Mr. Dheeraj</li>
+            <li><b>Siblings :</b> I have two sisters</li>
+          </ul>
+        </ul>
+
+        <h3>2. My Coding Journey</h3>
+        <ul>
+          <li><b>Who Introduced Me to Coding? : </b> My school</li>
+          <li><b>When Did I Start Learning Coding? :</b><br> During my web development studies</li>
+          <li><b>What Did I Learn First? :</b><br> HTML , CSS , and JavaScript</li>
+        </ul>
+
+        <h3>3. Experience with CodeYogi</h3>
+        <ul>
+          <li><b>When Did I Join CodeYogi? : </b><br> 2 August 2024</li>
+          <li><b>What Have I Learned Through This Program? :</b><br> HTML , CSS , and JavaScript</li>
+        </ul>
+
+        <h3>4. Additional Achievements</h3>
+        <ul>
+          <li><b>Competitions Participated : </b> Wordle </li>
+          <li><b>Awards or Positions Earned : </b> None</li>
+        </ul>
+
+        <h3>5. Future Plans</h3>
+        <ul>
+          <li><b>Career Goal :</b> To become a Software Developer</li>
+          <li><b>Reason :</b> I am passionate about creating innovative solutions and contributing to the tech world.</li>
+        </ul>
+      </div>
+      <button id="close-about-btn">Close</button>
+    </div>
+  </div>
+
+  <!-- Wordle Game Page -->
+  <div id="wordle-page" style="display: none;">
+       <button id="back-btn">⬅ Back</button>
+    <h1>Wordle</h1>
+    <div id="grid-container"></div>
+    <div id="keyboard-container"></div>
+  </div>
+
+  <!-- Result Page -->
+  <div id="result-page" style="display: none;">
+    <h1>Wordle</h1>
+    <h2 id="result-message"></h2>
+    <p style="font-weight: bold;">Thank's for playing today!</p>
+    <button id="play-again-btn">Play Again</button>
+  </div>
+  <script>
+    const words = ["GUARD", "APPLE", "PLANT"];
+    const correctWord = words[Math.floor(Math.random() * words.length)];
+    let currentRow = 0;
+    let currentCol = 0;
+    let userName = "";
+
+    // Welcome Page
+    document.getElementById("submit-btn").addEventListener("click", () => {
+      userName = document.getElementById("user-name").value;
+      if (userName.length >= 3) {
+        document.getElementById("welcome-page").style.display = "none";
+        document.getElementById("wordle-page").style.display = "block";
+      } else {
+        alert("Please enter at least 3 characters in your name!");
+      }
+    });
+
+    // About Modal
+    document.getElementById("about-btn").addEventListener("click", () => {
+      document.getElementById("about-modal").style.display = "flex";
+    });
+
+    document.getElementById("close-about-btn").addEventListener("click", () => {
+      document.getElementById("about-modal").style.display = "none";
+    });
+
+    // Initialize Grid
+    const gridContainer = document.getElementById("grid-container");
+    for (let i = 0; i < 30; i++) {
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      gridContainer.appendChild(cell);
+    }
+
+    // Initialize Keyboard
+    const keyboardContainer = document.getElementById("keyboard-container");
+    const keys = "QWERTYUIOPASDFGHJKLZXCVBNM".split("");
+    keys.push("ENTER", "DEL");
+
+    keys.forEach((key) => {
+      const keyDiv = document.createElement("div");
+      keyDiv.textContent = key;
+      keyDiv.classList.add("key");
+      if (key === "ENTER" || key === "DEL") {
+        keyDiv.classList.add("large");
+      }
+      keyDiv.addEventListener("click", () => handleKeyPress(key));
+      keyboardContainer.appendChild(keyDiv);
+    });
+
+    function handleKeyPress(key) {
+      const cells = document.querySelectorAll(".cell");
+      if (key === "ENTER") {
+        if (currentCol === 5) {
+          checkWord();
+          currentRow++;
+          currentCol = 0;
+        } else {
+          alert("Complete the word!");
+        }
+      } else if (key === "DEL") {
+        if (currentCol > 0) {
+          currentCol--;
+          cells[currentRow * 5 + currentCol].textContent = "";
+        }
+      } else if (currentCol < 5) {
+        cells[currentRow * 5 + currentCol].textContent = key;
+        currentCol++;
+      }
+    }
+
+    function checkWord() {
+      const cells = document.querySelectorAll(".cell");
+      const keys = document.querySelectorAll(".key");
+      let guess = "";
+
+      for (let i = 0; i < 5; i++) {
+        guess += cells[currentRow * 5 + i].textContent;
+      }
+
+      for (let i = 0; i < 5; i++) {
+        const cell = cells[currentRow * 5 + i];
+        const key = Array.from(keys).find((k) => k.textContent === guess[i]);
+
+        if (correctWord[i] === guess[i]) {
+          cell.classList.add("correct");
+          if (key) key.classList.add("correct");
+        } else if (correctWord.includes(guess[i])) {
+          cell.classList.add("present");
+          if (key) key.classList.add("present");
+        } else {
+          cell.classList.add("absent");
+          if (key) key.classList.add("absent");
+        }
+      }
+
+      if (guess === correctWord) {
+        endGame(true);
+      } else if (currentRow === 5) {
+        endGame(false);
+      }
+    }
+
+    function endGame(won) {
+      document.getElementById("wordle-page").style.display = "none";
+      document.getElementById("result-page").style.display = "block";
+      document.getElementById("result-message").textContent = won ?
+        `Congratulations ${userName}! You win. The word is ${correctWord}.` :
+        `Sorry ${userName}, you lose. The word was ${correctWord}.`;
+    }
+
+    document.getElementById("play-again-btn").addEventListener("click", () => {
+      location.reload();
+    });
+    
+    document.getElementById("back-btn").addEventListener("click", () => {
+  document.getElementById("wordle-page").style.display = "none";
+  document.getElementById("welcome-page").style.display = "block";
+});
+  </script>
+</body>
+
+</html>
